@@ -56,3 +56,31 @@ model Media {
 
   @@index([projectId])
 }
+
+model SiteSettings {
+  id              String   @id @default("site-settings")
+
+  // Dados pessoais
+  name            String   @default("")
+  title           String   @default("")
+  bio             String   @db.Text @default("")
+  profilePhotoUrl String?
+  profilePhotoId  String?
+
+  // Currículo PDF
+  resumeUrl       String?
+  resumeId        String?
+
+  // Contato/Redes sociais
+  email           String   @default("")
+  linkedinUrl     String?
+  instagramUrl    String?
+
+  // Listas dinâmicas (JSON)
+  skills          Json     @default("[]")
+  experiences     Json     @default("[]")
+  education       Json     @default("[]")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
