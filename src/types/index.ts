@@ -37,3 +37,40 @@ export interface ProjectFormData {
   featured: boolean;
   published: boolean;
 }
+
+export interface Skill {
+  id: string;
+  name: string;
+}
+
+export interface Experience {
+  id: string;
+  role: string;
+  company: string;
+  period: string;
+  description: string;
+}
+
+export interface Education {
+  id: string;
+  course: string;
+  institution: string;
+  period: string;
+}
+
+export interface SiteSettings {
+  id: string;
+  name: string;
+  title: string;
+  bio: string;
+  profilePhotoUrl: string | null;
+  profilePhotoId: string | null;
+  resumeUrl: string | null;
+  resumeId: string | null;
+  email: string;
+  linkedinUrl: string | null;
+  instagramUrl: string | null;
+  skills: Skill[];
+  experiences: Experience[];
+  education: Education[];
+}
