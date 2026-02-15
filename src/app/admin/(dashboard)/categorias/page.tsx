@@ -167,7 +167,7 @@ export default function CategoriesPage() {
             </div>
           ) : (
             <p className="text-zinc-600">
-              Tem certeza que deseja excluir a categoria <strong>"{deleteModal.category?.name}"</strong>?
+              Tem certeza que deseja excluir a categoria <strong>&quot;{deleteModal.category?.name}&quot;</strong>?
             </p>
           )}
 

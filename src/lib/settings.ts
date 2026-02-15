@@ -30,8 +30,8 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
 
   return {
     ...settings,
-    skills: settings.skills as Skill[],
-    experiences: settings.experiences as Experience[],
-    education: settings.education as Education[],
+    skills: (settings.skills as unknown) as Skill[],
+    experiences: (settings.experiences as unknown) as Experience[],
+    education: (settings.education as unknown) as Education[],
   };
 });
