@@ -1,4 +1,6 @@
 import { getSettings } from "@/lib/settings";
+
+export const dynamic = "force-dynamic";
 interface ContactItem {
   href: string;
   label: string;
