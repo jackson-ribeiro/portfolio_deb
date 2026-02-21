@@ -1,12 +1,22 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ProjectCard } from "@/components/portfolio/ProjectCard";
 import type { Project } from "@/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>;
+}) {
+  const { categoria } = await searchParams;
+
   const projects = await prisma.project.findMany({
-    where: { published: true },
+    where: {
+      published: true,
+      ...(categoria ? { category: { slug: categoria } } : {}),
+    },
     include: {
       category: true,
       media: { orderBy: { order: "asc" } },
@@ -35,16 +45,28 @@ export default async function HomePage() {
 
       {categories.length > 0 && (
         <nav className="flex flex-wrap gap-2 mb-8 animate-fade-in-up delay-200">
-          <span className="px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-full text-sm cursor-pointer transition-colors">
+          <Link
+            href="/"
+            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+              !categoria
+                ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900"
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+            }`}
+          >
             Todos
-          </span>
+          </Link>
           {categories.map((category) => (
-            <span
+            <Link
               key={category.id}
-              className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-full text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
+              href={`/?categoria=${category.slug}`}
+              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                categoria === category.slug
+                  ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900"
+                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+              }`}
             >
               {category.name}
-            </span>
+            </Link>
           ))}
         </nav>
       )}
@@ -61,7 +83,11 @@ export default async function HomePage() {
         </div>
       ) : (
         <div className="text-center py-20 animate-fade-in">
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg">Em breve novos projetos.</p>
+          <p className="text-zinc-500 dark:text-zinc-400 text-lg">
+            {categoria
+              ? "Nenhum projeto encontrado nessa categoria."
+              : "Em breve novos projetos."}
+          </p>
         </div>
       )}
     </div>
