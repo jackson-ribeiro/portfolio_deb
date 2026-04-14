@@ -36,8 +36,8 @@ export default async function AboutPage() {
           <div className="flex flex-wrap gap-4">
             {settings.resumeUrl && (
               <a
-                href={settings.resumeUrl}
-                download
+                href="/api/settings/download-resume"
+                download="curriculo.pdf"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-full font-medium hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
