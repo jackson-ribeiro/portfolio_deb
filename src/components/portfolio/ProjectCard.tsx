@@ -3,6 +3,12 @@
 import Link from "next/link";
 import type { Project } from "@/types";
 
+function getVideoPoster(url: string): string {
+  return url
+    .replace("/upload/", "/upload/so_auto/")
+    .replace(/\.(mp4|mov|webm|ogg|avi|mkv)$/i, ".jpg");
+}
+
 interface ProjectCardProps {
   project: Project;
   index?: number;
@@ -20,18 +26,30 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
       <div className="aspect-[4/3] overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 transition-colors">
         {thumbnail ? (
           thumbnail.type === "video" ? (
-            <video
-              src={thumbnail.url}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              muted
-              loop
-              playsInline
-              onMouseEnter={(e) => e.currentTarget.play()}
-              onMouseLeave={(e) => {
-                e.currentTarget.pause();
-                e.currentTarget.currentTime = 0;
-              }}
-            />
+            <div className="relative w-full h-full">
+              <video
+                src={thumbnail.url}
+                poster={getVideoPoster(thumbnail.url)}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                onMouseEnter={(e) => e.currentTarget.play()}
+                onMouseLeave={(e) => {
+                  e.currentTarget.pause();
+                  e.currentTarget.currentTime = 0;
+                }}
+              />
+              {/* Ícone de play — some no hover quando o vídeo começa a tocar */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-black/50 backdrop-blur-sm">
+                  <svg className="w-6 h-6 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+              </div>
+            </div>
           ) : (
             <img
               src={thumbnail.url}
