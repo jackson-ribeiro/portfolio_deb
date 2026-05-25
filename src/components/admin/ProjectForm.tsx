@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { MediaUploader } from "./MediaUploader";
+import { uploadMedia } from "@/lib/uploadMedia";
 import type { Project, Category, Media } from "@/types";
 
 interface ProjectFormProps {
@@ -64,11 +65,16 @@ export function ProjectForm({ project }: ProjectFormProps) {
       if (!project && pendingFiles.length > 0) {
         const newProject = await res.json();
         for (const file of pendingFiles) {
-          const data = new FormData();
-          data.append("file", file);
-          data.append("projectId", newProject.id);
-          await fetch("/api/upload", { method: "POST", body: data });
+          try {
+            await uploadMedia(file, newProject.id);
+          } catch (err) {
+            console.error("Erro no upload:", err);
+          }
         }
+        // Vai para a edição do projeto criado: lá dá pra revisar/reenviar mídias
+        router.push(`/admin/projetos/${newProject.id}`);
+        router.refresh();
+        return;
       }
 
       router.push("/admin/projetos");

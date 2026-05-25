@@ -10,6 +10,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// O arquivo é enviado direto do browser para o Cloudinary (ver src/lib/uploadMedia.ts),
+// então aqui só recebemos os metadados (JSON pequeno) e salvamos a mídia no banco.
+// Isso evita o limite de 4.5MB do body de funções serverless da Vercel.
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
@@ -17,48 +20,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  const formData = await request.formData();
-  const file = formData.get("file") as File;
-  const projectId = formData.get("projectId") as string;
+  const { url, publicId, type, projectId } = await request.json();
 
-  if (!file || !projectId) {
+  if (!url || !publicId || !projectId || (type !== "image" && type !== "video")) {
     return NextResponse.json(
-      { error: "Arquivo e projectId são obrigatórios" },
+      { error: "url, publicId, type (image|video) e projectId são obrigatórios" },
       { status: 400 }
     );
   }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const isVideo = file.type.startsWith("video/");
-  const resourceType = isVideo ? "video" : "image";
-
-  const result = await new Promise<{ secure_url: string; public_id: string }>(
-    (resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            resource_type: resourceType,
-            folder: "portfolio",
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result as { secure_url: string; public_id: string });
-          }
-        )
-        .end(buffer);
-    }
-  );
 
   // Contar mídias existentes para definir order
   const mediaCount = await prisma.media.count({ where: { projectId } });
 
   const media = await prisma.media.create({
     data: {
-      url: result.secure_url,
-      publicId: result.public_id,
-      type: isVideo ? "video" : "image",
+      url,
+      publicId,
+      type,
       order: mediaCount,
       projectId,
     },
