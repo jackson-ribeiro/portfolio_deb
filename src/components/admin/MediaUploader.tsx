@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
+import { uploadMedia } from "@/lib/uploadMedia";
 import type { Media } from "@/types";
 
 interface MediaUploaderProps {
@@ -13,30 +14,21 @@ interface MediaUploaderProps {
 export function MediaUploader({ projectId, media, onMediaChange }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUpload = useCallback(
     async (files: FileList) => {
       setUploading(true);
+      setError(null);
 
       const newMedia: Media[] = [];
 
       for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("projectId", projectId);
-
         try {
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
-
-          if (res.ok) {
-            const mediaItem = await res.json();
-            newMedia.push(mediaItem);
-          }
-        } catch (error) {
-          console.error("Erro no upload:", error);
+          newMedia.push(await uploadMedia(file, projectId));
+        } catch (err) {
+          console.error("Erro no upload:", err);
+          setError(err instanceof Error ? err.message : "Erro no upload.");
         }
       }
 
@@ -105,6 +97,8 @@ export function MediaUploader({ projectId, media, onMediaChange }: MediaUploader
           </div>
         </label>
       </div>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
       {media.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
