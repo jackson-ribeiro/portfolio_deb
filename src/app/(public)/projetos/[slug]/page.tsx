@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { ProjectCarousel } from "@/components/portfolio/ProjectCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -35,48 +36,27 @@ export default async function ProjectPage({
         Voltar
       </Link>
 
-      <header className="mb-12 animate-fade-in-up">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2">
-          {project.category.name}
-          {project.year && ` / ${project.year}`}
-        </p>
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">{project.title}</h1>
-        {project.client && (
-          <p className="text-zinc-600 dark:text-zinc-400">Cliente: {project.client}</p>
+      <div className="grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-12">
+        <header className="mb-12 animate-fade-in-up lg:col-start-2 lg:row-start-1 lg:mb-6">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+            {project.category.name}
+            {project.year && ` / ${project.year}`}
+          </p>
+          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">{project.title}</h1>
+          {project.client && (
+            <p className="text-zinc-600 dark:text-zinc-400">Cliente: {project.client}</p>
+          )}
+        </header>
+
+        {project.media.length > 0 && (
+          <ProjectCarousel media={project.media} title={project.title} />
         )}
-      </header>
 
-      {project.media.length > 0 && (
-        <div className="space-y-6 mb-12">
-          {project.media.map((item, index) => (
-            <div
-              key={item.id}
-              className="rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 animate-fade-in-up"
-              style={{ animationDelay: `${(index + 1) * 0.1}s` }}
-            >
-              {item.type === "video" ? (
-                <video
-                  src={item.url}
-                  controls
-                  className="w-full"
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={item.url}
-                  alt={project.title}
-                  className="w-full"
-                />
-              )}
-            </div>
-          ))}
+        <div className="prose prose-zinc dark:prose-invert max-w-none animate-fade-in-up delay-300 lg:col-start-2 lg:row-start-2">
+          <p className="text-lg text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
+            {project.description}
+          </p>
         </div>
-      )}
-
-      <div className="prose prose-zinc dark:prose-invert max-w-none animate-fade-in-up delay-300">
-        <p className="text-lg text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
-          {project.description}
-        </p>
       </div>
     </div>
   );
