@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "docker compose up -d --wait",
     "dev": "next dev",
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
@@ -12,7 +13,10 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "sync:prod": "bash scripts/sync-from-prod.sh"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
