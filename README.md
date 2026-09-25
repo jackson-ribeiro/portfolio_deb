@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Desenvolvimento local
+
+O ambiente local usa um banco Postgres próprio (docker-compose) e a pasta
+`portfolio-dev/` do Cloudinary. A produção (Vercel + Neon, pasta `portfolio/`)
+nunca é alterada: ela só é lida para gerar a cópia local.
+
+1. `cp .env.example .env` e preencha os valores (os da Vercel, exceto
+   `DATABASE_URL`, `NEXTAUTH_URL` e `CLOUDINARY_FOLDER`).
+2. `npm install`
+3. `npm run sync:prod`: sobe o banco local e copia o banco e as mídias da produção.
+4. `npm run dev` e abra [http://localhost:3000](http://localhost:3000).
+
+O `npm run dev` já sobe o banco antes do site.
+Rode `npm run sync:prod` de novo sempre que quiser os dados atuais da produção.
+Ele substitui todo o banco local. Para desligar o banco: `npm run db:down`.
+
 ## Getting Started
 
 First, run the development server:

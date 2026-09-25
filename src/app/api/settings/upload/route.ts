@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { v2 as cloudinary } from "cloudinary";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { cloudinary, CLOUDINARY_FOLDER, destroyOwnFile } from "@/lib/cloudinary";
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -33,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   const isResume = type === "resume";
   const resourceType = isResume ? "raw" : "image";
-  const folder = isResume ? "portfolio/resume" : "portfolio/profile";
+  const folder = `${CLOUDINARY_FOLDER}/${isResume ? "resume" : "profile"}`;
 
   // Buscar configurações atuais para deletar arquivo anterior
   const currentSettings = await prisma.siteSettings.findUnique({
@@ -48,9 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (previousId) {
       try {
-        await cloudinary.uploader.destroy(previousId, {
-          resource_type: resourceType,
-        });
+        await destroyOwnFile(previousId, resourceType);
       } catch {
         // Ignora erro se arquivo não existir
       }

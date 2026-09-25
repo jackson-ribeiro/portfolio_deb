@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { v2 as cloudinary } from "cloudinary";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { destroyOwnFile } from "@/lib/cloudinary";
 
 // O arquivo é enviado direto do browser para o Cloudinary (ver src/lib/uploadMedia.ts),
 // então aqui só recebemos os metadados (JSON pequeno) e salvamos a mídia no banco.
@@ -68,7 +62,7 @@ export async function DELETE(request: NextRequest) {
 
   // Deletar do Cloudinary
   const resourceType = media.type === "video" ? "video" : "image";
-  await cloudinary.uploader.destroy(media.publicId, { resource_type: resourceType });
+  await destroyOwnFile(media.publicId, resourceType);
 
   // Deletar do banco
   await prisma.media.delete({ where: { id: mediaId } });
