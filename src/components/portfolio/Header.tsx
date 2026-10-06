@@ -19,13 +19,13 @@ export function Header({ name = "Portfolio" }: HeaderProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 transition-colors">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-3">
+        <Link href="/" className="shrink-0 text-lg sm:text-xl font-bold text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
           {name}
         </Link>
 
-        <div className="flex items-center gap-6">
-          <nav className="flex items-center gap-8">
+        <div className="flex items-center gap-2 sm:gap-6">
+          <nav className="flex items-center gap-3 sm:gap-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
